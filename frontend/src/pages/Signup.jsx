@@ -14,7 +14,7 @@ const Signup = () => {
         try{
             const response = await axios.post('/api/auth/register', { name, email, password });
             console.log(response);
-            navigate('/');
+            navigate('/dashboard');
         }catch(error){
             console.log(error);
         }

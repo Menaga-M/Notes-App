@@ -20,8 +20,10 @@ const Login = () => {
         email,
         password,
       })
-      console.log(response)
-      navigate('/')
+      if (response.data.success) {
+        localStorage.setItem('token', response.data.token)
+        navigate('/dashboard')
+      }
     } catch (error) {
       console.error(error)
     }
