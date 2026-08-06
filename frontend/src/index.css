@@ -27,12 +27,75 @@ body {
   min-height: 100vh;
 }
 
+.home-page {
+  width: 100%;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+
+.home-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+.home-header {
+  margin-bottom: 24px;
+}
+
+.home-title {
+  margin: 0 0 12px;
+  font-size: 2.15rem;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.home-description {
+  margin: 0;
+  font-size: 1rem;
+  color: #475569;
+  max-width: 680px;
+}
+
+.home-features {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.home-feature {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.home-feature strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #1e3a8a;
+  font-size: 1rem;
+}
+
+.home-feature p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
 .signup-page {
+  width: 100%;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .signup-card {
@@ -112,6 +175,31 @@ body {
   transform: translateY(-1px);
 }
 
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #64748b;
+  padding: 6px;
+}
+
+.password-toggle:hover {
+  color: #2563eb;
+}
+
 .signup-button {
   border: none;
   border-radius: 999px;
@@ -137,6 +225,123 @@ body {
 }
 
 .signup-footer a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: min(100%, 460px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.login-brand {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+}
+
+.login-title {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-subtitle {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.login-field input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.login-field input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.login-button {
+  border: none;
+  border-radius: 999px;
+  padding: 13px 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.3);
+}
+
+.login-footer {
+  margin-top: 18px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.login-footer a {
   color: #2563eb;
   font-weight: 600;
   text-decoration: none;

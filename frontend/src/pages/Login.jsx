@@ -1,0 +1,89 @@
+import { useState } from 'react'
+import axios from 'axios'
+import { useNavigate, Link } from 'react-router-dom'
+
+const Login = () => {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password,
+      })
+      console.log(response)
+      navigate('/')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return (
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-brand">
+          <div className="login-icon">🔐</div>
+          <h2 className="login-title">Welcome back</h2>
+          <p className="login-subtitle">
+            Sign in to manage your notes, access your workspace, and continue where you left off.
+          </p>
+        </div>
+
+        <form className="login-form" onSubmit={handleSubmit}>
+          <div className="login-field">
+            <label htmlFor="email">Email address</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="login-field">
+            <label htmlFor="password">Password</label>
+            <div className="password-input-wrapper">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={togglePassword}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" className="login-button">
+            Sign in
+          </button>
+        </form>
+
+        <p className="login-footer">
+          Don’t have an account? <Link to="/register">Signup</Link>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default Login

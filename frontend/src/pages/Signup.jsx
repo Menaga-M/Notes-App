@@ -1,19 +1,27 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Signup = () => {
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
         try{
             const response = await axios.post('/api/auth/register', { name, email, password });
             console.log(response);
+            navigate('/');
         }catch(error){
             console.log(error);
         }
+    };
+
+    const togglePassword = () => {
+      setShowPassword((prev) => !prev);
     };
 
   return (
@@ -38,7 +46,24 @@ const Signup = () => {
 
           <div className="signup-field">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} name="password" placeholder="Enter your password" required />
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={togglePassword}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="signup-button">
@@ -47,7 +72,7 @@ const Signup = () => {
         </form>
 
         <p className="signup-footer">
-          Already have an account? <a href="#">Sign in</a>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
     </div>
