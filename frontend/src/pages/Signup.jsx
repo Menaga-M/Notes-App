@@ -1,4 +1,4 @@
-import useState from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 const Signup = () => {
@@ -10,7 +10,7 @@ const Signup = () => {
         e.preventDefault();
         try{
             const response = await axios.post('/api/auth/register', { name, email, password });
-            console.log(response.data);
+            console.log(response);
         }catch(error){
             console.log(error);
         }
