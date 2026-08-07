@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/ContextProvider'
 
 const Dashboard = () => {
@@ -24,6 +24,10 @@ const Dashboard = () => {
   // Prevent accessing user properties before session check finishes
   if (loading) {
     return <div className="dashboard-loading">Loading your dashboard...</div>
+  }
+
+  if (!user?.name) {
+    return <Navigate to="/login" replace />
   }
 
   return (
@@ -54,8 +58,7 @@ const Dashboard = () => {
                 ☰
               </button>
               <div>
-                {/* Safely display user name with optional chaining fallback */}
-                <p className="dashboard-eyebrow">{user?.name || 'Guest'}</p>
+                <p className="dashboard-eyebrow">{user.name}</p>
                 <h1>Welcome to your dashboard</h1>
                 <p className="dashboard-subtitle">
                   This is where your notes, ideas, and plans can live in one calm place.

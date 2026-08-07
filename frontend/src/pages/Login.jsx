@@ -24,7 +24,9 @@ const Login = () => {
       })
       if (response.data.success) {
         localStorage.setItem('token', response.data.token)
-        setUser(response.data.existingUser)
+        // Accept the current API response and the older `existingUser` response
+        // while the backend server is being restarted during development.
+        setUser(response.data.user ?? response.data.existingUser)
         navigate('/dashboard')
       }
     } catch (error) {

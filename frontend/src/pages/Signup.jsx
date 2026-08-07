@@ -17,7 +17,7 @@ const Signup = () => {
             const response = await axios.post('/api/auth/register', { name, email, password });
             if (response.data.success) {
               localStorage.setItem('token', response.data.token);
-              setUser(response.data.existingUser);
+              setUser(response.data.user ?? response.data.existingUser);
               navigate('/dashboard');
             }
         }catch(error){
