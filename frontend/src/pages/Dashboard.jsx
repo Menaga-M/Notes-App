@@ -1,17 +1,34 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/ContextProvider'
 
 const Dashboard = () => {
+  const { user, setUser, loading } = useAuth()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev)
+  }
+
+  const closeSidebar = () => {
+    setSidebarOpen(false)
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
+    setUser(null)
     navigate('/login')
+  }
+
+  // Prevent accessing user properties before session check finishes
+  if (loading) {
+    return <div className="dashboard-loading">Loading your dashboard...</div>
   }
 
   return (
     <div className="dashboard-page">
+      <div className={`dashboard-backdrop ${sidebarOpen ? 'visible' : ''}`} onClick={closeSidebar} />
       <div className="dashboard-shell">
         <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <div className="sidebar-brand">
@@ -33,11 +50,12 @@ const Dashboard = () => {
         <main className="dashboard-main">
           <div className="dashboard-header">
             <div className="dashboard-header-left">
-              <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <button className="sidebar-toggle" onClick={toggleSidebar}>
                 ☰
               </button>
               <div>
-                <p className="dashboard-eyebrow">Your workspace</p>
+                {/* Safely display user name with optional chaining fallback */}
+                <p className="dashboard-eyebrow">{user?.name || 'Guest'}</p>
                 <h1>Welcome to your dashboard</h1>
                 <p className="dashboard-subtitle">
                   This is where your notes, ideas, and plans can live in one calm place.

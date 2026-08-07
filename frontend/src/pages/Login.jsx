@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/ContextProvider'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { setUser } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -22,6 +24,7 @@ const Login = () => {
       })
       if (response.data.success) {
         localStorage.setItem('token', response.data.token)
+        setUser(response.data.existingUser)
         navigate('/dashboard')
       }
     } catch (error) {

@@ -405,6 +405,23 @@ body {
   padding: 32px 16px 48px;
   box-sizing: border-box;
   background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+  position: relative;
+}
+
+.dashboard-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 998;
+}
+
+.dashboard-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .dashboard-shell {
@@ -430,13 +447,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: fit-content;
+  min-height: 320px;
   position: fixed;
   left: 20px;
   top: 32px;
   z-index: 1000;
   transform: translateX(-280px);
   transition: transform 0.3s ease;
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.2);
 }
 
 .dashboard-sidebar.open {

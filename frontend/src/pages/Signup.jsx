@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/ContextProvider';
 
 const Signup = () => {
     const navigate = useNavigate();
+    const { setUser } = useAuth();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,8 +15,11 @@ const Signup = () => {
         e.preventDefault();
         try{
             const response = await axios.post('/api/auth/register', { name, email, password });
-            console.log(response);
-            navigate('/dashboard');
+            if (response.data.success) {
+              localStorage.setItem('token', response.data.token);
+              setUser(response.data.existingUser);
+              navigate('/dashboard');
+            }
         }catch(error){
             console.log(error);
         }
