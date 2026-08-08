@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
-const NoteModel = ({ onClose, onSave }) => {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+const NoteModel = ({ note, onClose, onSave }) => {
+  const [title, setTitle] = useState(note?.title || '')
+  const [content, setContent] = useState(note?.content || '')
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const titleInput = useRef(null)
@@ -44,8 +44,8 @@ const NoteModel = ({ onClose, onSave }) => {
       >
         <div className="note-modal-header">
           <div>
-            <p className="note-modal-eyebrow">New note</p>
-            <h2 id="note-modal-title">Capture your thought</h2>
+            <p className="note-modal-eyebrow">{note ? 'Edit note' : 'New note'}</p>
+            <h2 id="note-modal-title">{note ? 'Refine your note' : 'Capture your thought'}</h2>
           </div>
           <button className="note-modal-close" type="button" onClick={onClose} aria-label="Close note editor">×</button>
         </div>
@@ -77,7 +77,7 @@ const NoteModel = ({ onClose, onSave }) => {
           <div className="note-modal-actions">
             <button className="note-cancel" type="button" onClick={onClose}>Cancel</button>
             <button className="note-save" type="submit" disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save note'}
+              {isSaving ? 'Saving...' : note ? 'Save changes' : 'Save note'}
             </button>
           </div>
         </form>

@@ -37,4 +37,31 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
+router.put("/:id", authenticate, async (req, res) => {
+  try {
+    const title = req.body.title?.trim();
+    const content = req.body.content?.trim() || "";
+    if (!title) return res.status(400).json({ success: false, message: "A note title is required" });
+    const note = await Note.findOneAndUpdate(
+      { _id: req.params.id, user: req.userId },
+      { title, content },
+      { new: true, runValidators: true }
+    );
+    if (!note) return res.status(404).json({ success: false, message: "Note not found" });
+    res.json({ success: true, note });
+  } catch (error) {
+    res.status(error.name === "CastError" ? 404 : 500).json({ success: false, message: "Could not update note" });
+  }
+});
+
+router.delete("/:id", authenticate, async (req, res) => {
+  try {
+    const note = await Note.findOneAndDelete({ _id: req.params.id, user: req.userId });
+    if (!note) return res.status(404).json({ success: false, message: "Note not found" });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(error.name === "CastError" ? 404 : 500).json({ success: false, message: "Could not delete note" });
+  }
+});
+
 export default router;
