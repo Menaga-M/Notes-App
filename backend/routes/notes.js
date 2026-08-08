@@ -42,10 +42,13 @@ router.put("/:id", authenticate, async (req, res) => {
     const title = req.body.title?.trim();
     const content = req.body.content?.trim() || "";
     if (!title) return res.status(400).json({ success: false, message: "A note title is required" });
+    const isFavorite = typeof req.body.isFavorite === "boolean" ? req.body.isFavorite : undefined;
+    const updates = { title, content };
+    if (isFavorite !== undefined) updates.isFavorite = isFavorite;
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
-      { title, content },
-      { new: true, runValidators: true }
+      updates,
+      { returnDocument: "after", runValidators: true }
     );
     if (!note) return res.status(404).json({ success: false, message: "Note not found" });
     res.json({ success: true, note });
