@@ -9,6 +9,8 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev)
@@ -16,6 +18,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrorMessage('')
+    setIsSubmitting(true)
 
     try {
       const response = await axios.post('/api/auth/login', {
@@ -31,6 +35,13 @@ const Login = () => {
       }
     } catch (error) {
       console.error(error)
+      if (error.response?.status === 502) {
+        setErrorMessage('The app server is unavailable. Start the backend on port 5000 and try again.')
+      } else {
+        setErrorMessage(error.response?.data?.message || 'Unable to sign in. Please check your details and try again.')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -80,8 +91,10 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="login-button">
-            Sign in
+          {errorMessage && <p className="login-error" role="alert">{errorMessage}</p>}
+
+          <button type="submit" className="login-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
