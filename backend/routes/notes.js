@@ -43,8 +43,10 @@ router.put("/:id", authenticate, async (req, res) => {
     const content = req.body.content?.trim() || "";
     if (!title) return res.status(400).json({ success: false, message: "A note title is required" });
     const isFavorite = typeof req.body.isFavorite === "boolean" ? req.body.isFavorite : undefined;
+    const isArchived = typeof req.body.isArchived === "boolean" ? req.body.isArchived : undefined;
     const updates = { title, content };
     if (isFavorite !== undefined) updates.isFavorite = isFavorite;
+    if (isArchived !== undefined) updates.isArchived = isArchived;
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
       updates,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { FaBars, FaHeart, FaPen, FaRegHeart, FaSearch, FaTrash } from 'react-icons/fa'
+import { FaArchive, FaBars, FaHeart, FaPen, FaRegHeart, FaSearch, FaTrash } from 'react-icons/fa'
 import { useAuth } from '../context/ContextProvider'
 import NoteModel from '../components/NoteModel'
 
@@ -37,7 +37,11 @@ const Dashboard = () => {
   }, [request])
 
   const visibleNotes = useMemo(() => {
-    const scope = activeView === 'favorites' ? notes.filter((note) => note.isFavorite) : notes
+    const scope = activeView === 'favorites'
+      ? notes.filter((note) => note.isFavorite && !note.isArchived)
+      : activeView === 'archived'
+        ? notes.filter((note) => note.isArchived)
+        : notes.filter((note) => !note.isArchived)
     const term = query.trim().toLowerCase()
     return term ? scope.filter((note) => `${note.title} ${note.content}`.toLowerCase().includes(term)) : scope
   }, [notes, query, activeView])
@@ -57,6 +61,12 @@ const Dashboard = () => {
       setNotes((items) => items.map((item) => item._id === data.note._id ? data.note : item))
     } catch (error) { setActionError(error.message) }
   }
+  const toggleArchive = async (note) => {
+    try {
+      const data = await request(`/api/notes/${note._id}`, { method: 'PUT', body: JSON.stringify({ title: note.title, content: note.content, isFavorite: note.isFavorite, isArchived: !note.isArchived }) })
+      setNotes((items) => items.map((item) => item._id === data.note._id ? data.note : item))
+    } catch (error) { setActionError(error.message) }
+  }
   const selectView = (view) => { setActiveView(view); closeSidebar() }
   const handleLogout = () => { localStorage.removeItem('token'); setUser(null); navigate('/login') }
   if (loading) return <div className="dashboard-loading">Loading your dashboard...</div>
@@ -70,15 +80,16 @@ const Dashboard = () => {
       <nav className="sidebar-links" aria-label="Workspace navigation">
         <button className={`sidebar-link ${activeView === 'all' ? 'active' : ''}`} onClick={() => selectView('all')}>All notes</button>
         <button className={`sidebar-link ${activeView === 'favorites' ? 'active' : ''}`} onClick={() => selectView('favorites')}>Favorites</button>
+        <button className={`sidebar-link ${activeView === 'archived' ? 'active' : ''}`} onClick={() => selectView('archived')}>Archive</button>
       </nav>
       <button className="sidebar-logout" onClick={handleLogout}>Logout</button>
     </aside>
     <main className="dashboard-shell dashboard-main">
       <header className="dashboard-header"><div className="dashboard-header-left"><button ref={menuButton} className="sidebar-toggle" onClick={() => setSidebarOpen(true)} aria-label="Open navigation menu" aria-expanded={sidebarOpen} aria-controls="workspace-navigation"><FaBars /></button><div><p className="dashboard-eyebrow">{user.name}</p><h1>My notes</h1><p className="dashboard-subtitle">A simple space for your ideas, tasks, and everything in between.</p></div></div><div className="dashboard-actions"><label className="dashboard-search" htmlFor="dashboard-search"><FaSearch aria-hidden="true" /><input id="dashboard-search" value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Search notes" /></label><button onClick={() => openEditor()} className="dashboard-new-note">+ New note</button></div></header>
-      <section className="notes-workspace" aria-labelledby="notes-heading"><div className="notes-workspace-header"><div><h2 id="notes-heading">{activeView === 'favorites' ? 'Favorite notes' : 'All notes'}</h2><p>{notesLoading ? 'Loading notes...' : `${visibleNotes.length} note${visibleNotes.length === 1 ? '' : 's'}`}</p></div></div>
+      <section className="notes-workspace" aria-labelledby="notes-heading"><div className="notes-workspace-header"><div><h2 id="notes-heading">{activeView === 'favorites' ? 'Favorite notes' : activeView === 'archived' ? 'Archived notes' : 'All notes'}</h2><p>{notesLoading ? 'Loading notes...' : `${visibleNotes.length} note${visibleNotes.length === 1 ? '' : 's'}`}</p></div></div>
         {actionError && <p className="note-form-error" role="alert">{actionError}</p>}
-        {!notesLoading && visibleNotes.length > 0 && <div className="note-list">{visibleNotes.map((note) => <article className="note-preview" key={note._id}><div className="note-preview-top"><div><h3>{note.title}</h3><p>{note.content || 'No additional content'}</p></div><button className={`note-icon-button note-favorite ${note.isFavorite ? 'is-favorite' : ''}`} onClick={() => toggleFavorite(note)} aria-label={`${note.isFavorite ? 'Remove' : 'Add'} ${note.title} ${note.isFavorite ? 'from' : 'to'} favorites`} title={note.isFavorite ? 'Remove from favorites' : 'Add to favorites'}>{note.isFavorite ? <FaHeart /> : <FaRegHeart />}</button></div><div className="note-preview-actions"><button className="note-icon-button" onClick={() => openEditor(note)} aria-label={`Edit ${note.title}`} title="Edit note"><FaPen /></button><button className="note-icon-button note-delete" onClick={() => deleteNote(note)} aria-label={`Delete ${note.title}`} title="Delete note"><FaTrash /></button></div></article>)}</div>}
-        {!notesLoading && visibleNotes.length === 0 && <div className="empty-notes"><h3>{query ? 'No matching notes' : activeView === 'favorites' ? 'No favorite notes yet' : 'Your workspace is ready'}</h3><p>{query ? 'Try another search term.' : activeView === 'favorites' ? 'Tap the heart on a note to keep it close.' : 'Create a note to begin collecting your thoughts.'}</p>{!query && activeView === 'all' && <button onClick={() => openEditor()}>Create a note</button>}</div>}
+        {!notesLoading && visibleNotes.length > 0 && <div className="note-list">{visibleNotes.map((note) => <article className="note-preview" key={note._id}><div className="note-preview-top"><div><h3>{note.title}</h3><p>{note.content || 'No additional content'}</p></div><button className={`note-icon-button note-favorite ${note.isFavorite ? 'is-favorite' : ''}`} onClick={() => toggleFavorite(note)} aria-label={`${note.isFavorite ? 'Remove' : 'Add'} ${note.title} ${note.isFavorite ? 'from' : 'to'} favorites`} title={note.isFavorite ? 'Remove from favorites' : 'Add to favorites'}>{note.isFavorite ? <FaHeart /> : <FaRegHeart />}</button></div><div className="note-preview-actions"><button className="note-icon-button" onClick={() => openEditor(note)} aria-label={`Edit ${note.title}`} title="Edit note"><FaPen /></button><button className={`note-icon-button note-archive ${note.isArchived ? 'is-archived' : ''}`} onClick={() => toggleArchive(note)} aria-label={`${note.isArchived ? 'Restore' : 'Archive'} ${note.title}`} title={note.isArchived ? 'Restore note' : 'Archive note'}><FaArchive /></button><button className="note-icon-button note-delete" onClick={() => deleteNote(note)} aria-label={`Delete ${note.title}`} title="Delete note"><FaTrash /></button></div></article>)}</div>}
+        {!notesLoading && visibleNotes.length === 0 && <div className="empty-notes"><h3>{query ? 'No matching notes' : activeView === 'favorites' ? 'No favorite notes yet' : activeView === 'archived' ? 'No archived notes yet' : 'Your workspace is ready'}</h3><p>{query ? 'Try another search term.' : activeView === 'favorites' ? 'Tap the heart on a note to keep it close.' : activeView === 'archived' ? 'Archived notes will appear here.' : 'Create a note to begin collecting your thoughts.'}</p>{!query && activeView === 'all' && <button onClick={() => openEditor()}>Create a note</button>}</div>}
       </section>
     </main>
     {isEditorOpen && <NoteModel note={editorNote} onClose={closeEditor} onSave={saveNote} />}

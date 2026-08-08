@@ -5,6 +5,7 @@ const noteSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true, maxlength: 120 },
   content: { type: String, trim: true, maxlength: 5000, default: "" },
   isFavorite: { type: Boolean, default: false },
+  isArchived: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export default mongoose.model("Note", noteSchema);
