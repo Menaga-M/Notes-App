@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/ContextProvider';
+import { apiUrl } from '../api';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -10,18 +11,24 @@ const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
+        setErrorMessage('');
+        setIsSubmitting(true);
         try{
-            const response = await axios.post('/api/auth/register', { name, email, password });
+            const response = await axios.post(apiUrl('/api/auth/register'), { name, email, password });
             if (response.data.success) {
               localStorage.setItem('token', response.data.token);
               setUser(response.data.user ?? response.data.existingUser);
               navigate('/dashboard');
             }
         }catch(error){
-            console.log(error);
+            setErrorMessage(error.response?.data?.message || 'Unable to create your account. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -71,8 +78,9 @@ const Signup = () => {
             </div>
           </div>
 
-          <button type="submit" className="signup-button">
-            Create account
+          {errorMessage && <p className="login-error" role="alert">{errorMessage}</p>}
+          <button type="submit" className="signup-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 

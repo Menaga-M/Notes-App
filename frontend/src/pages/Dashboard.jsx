@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { FaArchive, FaBars, FaHeart, FaPen, FaRegHeart, FaSearch, FaTrash } from 'react-icons/fa'
 import { useAuth } from '../context/ContextProvider'
 import NoteModel from '../components/NoteModel'
+import { apiUrl } from '../api'
 
 const Dashboard = () => {
   const { user, setUser, loading } = useAuth()
@@ -27,7 +28,7 @@ const Dashboard = () => {
     if (!response.ok || !data?.success) throw new Error(data?.message || 'The server returned an unexpected response. Please try again.')
     return data
   }, [])
-  const request = useCallback(async (path, options = {}) => readApiResponse(await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}`, ...options.headers } })), [readApiResponse])
+  const request = useCallback(async (path, options = {}) => readApiResponse(await fetch(apiUrl(path), { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}`, ...options.headers } })), [readApiResponse])
 
   useEffect(() => {
     const loadNotes = async () => {

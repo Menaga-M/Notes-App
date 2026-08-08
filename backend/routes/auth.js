@@ -27,15 +27,17 @@ router.get("/me", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  
   try {
-    // Check if the user already exists
-    const { name, email, password } = req.body;
+    const name = req.body.name?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
+    if (!name || !email || !password) return res.status(400).json({ success: false, message: "Name, email, and password are required" });
+    if (!/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ success: false, message: "Enter a valid email address" });
+    if (password.length < 8) return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ success: false, message: "User already exists" });
     } else {
-      // Create a new user
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({ name, email, password: hashedPassword });
       await newUser.save();
@@ -54,18 +56,18 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  
   try {
-    // Check if the user already exists
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
+    if (!email || !password) return res.status(400).json({ success: false, message: "Email and password are required" });
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ success: false, message: "User not exist" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     } 
 
     const checkpassword = await bcrypt.compare(password, user.password);
     if (!checkpassword) {
-        return res.status(400).json({ success: false, message: "Invalid credentials" });
+        return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "5h" });
