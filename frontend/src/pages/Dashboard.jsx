@@ -11,6 +11,9 @@ const Dashboard = () => {
   const [notes, setNotes] = useState([])
   const [notesLoading, setNotesLoading] = useState(true)
 
+  const toggleSidebar = () => setSidebarOpen((isOpen) => !isOpen)
+  const closeSidebar = () => setSidebarOpen(false)
+
   useEffect(() => {
     const loadNotes = async () => {
       const token = localStorage.getItem('token')
@@ -25,14 +28,6 @@ const Dashboard = () => {
     }
     loadNotes()
   }, [])
-
-  const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev)
-  }
-
-  const closeSidebar = () => {
-    setSidebarOpen(false)
-  }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -68,24 +63,20 @@ const Dashboard = () => {
         <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <div className="sidebar-brand">
             <div className="sidebar-brand-mark">N</div>
-            <div>
-              <h2>Notes App</h2>
-              <p>Workspace</p>
-            </div>
+            <div><h2>Notes App</h2><p>{user.name}'s workspace</p></div>
           </div>
-
           <div className="sidebar-links">
-            <button className="sidebar-link active">Overview</button>
-            <button className="sidebar-link">Notes</button>
-            <button className="sidebar-link">Favorites</button>
-            <button className="sidebar-link">Archive</button>
+            <button className="sidebar-link active" onClick={closeSidebar}>Overview</button>
+            <button className="sidebar-link" onClick={closeSidebar}>Notes</button>
+            <button className="sidebar-link" onClick={closeSidebar}>Favorites</button>
+            <button className="sidebar-link" onClick={closeSidebar}>Archive</button>
           </div>
+          <button className="sidebar-logout" onClick={handleLogout}>Logout</button>
         </aside>
-
         <main className="dashboard-main">
           <div className="dashboard-header">
             <div className="dashboard-header-left">
-              <button className="sidebar-toggle" onClick={toggleSidebar}>
+              <button className="sidebar-toggle" onClick={toggleSidebar} aria-label="Open workspace menu">
                 ☰
               </button>
               <div>
@@ -105,33 +96,33 @@ const Dashboard = () => {
               <button 
               onClick={() => setIsModalOpen(true)}
               className="dashboard-new-note">+ New Note</button>
-              <button className="dashboard-logout" onClick={handleLogout}>
-                Logout
-              </button>
             </div>
           </div>
 
-          <div className="dashboard-grid">
-            <article className="dashboard-card featured-card notes-card">
-              <div className="notes-card-heading">
-                <div>
-                  <h3>Recent notes</h3>
-                  <p>{notesLoading ? 'Loading your notes...' : notes.length ? `${notes.length} note${notes.length === 1 ? '' : 's'} in your workspace` : 'No notes yet. Start by creating your first one.'}</p>
-                </div>
-                <button className="notes-card-add" onClick={() => setIsModalOpen(true)}>+ Add note</button>
+          <section className="notes-section">
+            <div className="notes-card-heading">
+              <div>
+                <h2>Recent notes</h2>
+                <p>{notesLoading ? 'Loading your notes...' : notes.length ? `${notes.length} note${notes.length === 1 ? '' : 's'} in your workspace` : 'No notes yet. Start by creating your first one.'}</p>
               </div>
-              {!notesLoading && notes.length > 0 && (
-                <div className="note-list">
-                  {notes.slice(0, 4).map((note) => (
-                    <article className="note-preview" key={note._id}>
-                      <h4>{note.title}</h4>
-                      <p>{note.content || 'No additional content'}</p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </article>
+              <button className="notes-card-add" onClick={() => setIsModalOpen(true)}>+ Add note</button>
+            </div>
+            {!notesLoading && notes.length > 0 && (
+              <div className="note-list">
+                {notes.map((note) => (
+                  <article className="note-preview" key={note._id}>
+                    <h4>{note.title}</h4>
+                    <p>{note.content || 'No additional content'}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+            {!notesLoading && notes.length === 0 && (
+              <button className="empty-notes" onClick={() => setIsModalOpen(true)}>Create your first note</button>
+            )}
+          </section>
 
+          <div className="dashboard-grid">
             <article className="dashboard-card">
               <h3>Quick actions</h3>
               <p>Create a note, organize your ideas, and keep your workflow moving with confidence.</p>
